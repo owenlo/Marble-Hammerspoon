@@ -1,3 +1,5 @@
+-- Source:https://github.com/tekezo/Karabiner/issues/814#issuecomment-415388742
+
 -- HANDLE SCROLLING WITH MOUSE BUTTON PRESSED
 local backMouseButton = 3
 local forwardMouseButton = 4
