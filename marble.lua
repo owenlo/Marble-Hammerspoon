@@ -1,11 +1,12 @@
 -- HANDLE SCROLLING WITH MOUSE BUTTON PRESSED
-local scrollMouseButton = 3
+local backMouseButton = 3
+local forwardMouseButton = 4
 local deferred = false
 
 overrideOtherMouseDown = hs.eventtap.new({ hs.eventtap.event.types.otherMouseDown }, function(e)
-    -- print("down")
+    -- print("down")    
     local pressedMouseButton = e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber'])
-    if scrollMouseButton == pressedMouseButton 
+    if backMouseButton == pressedMouseButton or forwardMouseButton == pressedMouseButton 
         then 
             deferred = true
             return true
@@ -15,7 +16,7 @@ end)
 overrideOtherMouseUp = hs.eventtap.new({ hs.eventtap.event.types.otherMouseUp }, function(e)
      -- print("up")
     local pressedMouseButton = e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber'])
-    if scrollMouseButton == pressedMouseButton 
+    if backMouseButton == pressedMouseButton or forwardMouseButton == pressedMouseButton 
         then 
             if (deferred) then
                 overrideOtherMouseDown:stop()
@@ -36,14 +37,14 @@ local scrollmult = -4	-- negative multiplier makes mouse work like traditional s
 dragOtherToScroll = hs.eventtap.new({ hs.eventtap.event.types.otherMouseDragged }, function(e)
     local pressedMouseButton = e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber'])
     -- print ("pressed mouse " .. pressedMouseButton)
-    if scrollMouseButton == pressedMouseButton 
+    if backMouseButton == pressedMouseButton or forwardMouseButton == pressedMouseButton 
         then 
             -- print("scroll");
             deferred = false
             oldmousepos = hs.mouse.getAbsolutePosition()    
             local dx = e:getProperty(hs.eventtap.event.properties['mouseEventDeltaX'])
             local dy = e:getProperty(hs.eventtap.event.properties['mouseEventDeltaY'])
-            local scroll = hs.eventtap.event.newScrollEvent({-dx * scrollmult, dy * scrollmult},{},'pixel')
+            local scroll = hs.eventtap.event.newScrollEvent({dx * scrollmult, dy * scrollmult},{},'pixel')
             -- put the mouse back
             hs.mouse.setAbsolutePosition(oldmousepos)
             return true, {scroll}
