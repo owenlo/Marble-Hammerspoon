@@ -5,11 +5,19 @@ local backMouseButton = 3
 local forwardMouseButton = 4
 local deferred = false
 
+function setOverrides(e)
+    overrideOtherMouseDown:stop()
+    overrideOtherMouseUp:stop()
+    hs.eventtap.otherClick(e:location(), 0, pressedMouseButton)
+    overrideOtherMouseDown:start()
+    overrideOtherMouseUp:start()	
+end
+
 overrideOtherMouseDown = hs.eventtap.new({ hs.eventtap.event.types.otherMouseDown }, function(e)
     -- print("down")    
     local pressedMouseButton = e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber'])
     if backMouseButton == pressedMouseButton or forwardMouseButton == pressedMouseButton 
-        then 
+    then
             deferred = true
             return true
         end
@@ -18,19 +26,26 @@ end)
 overrideOtherMouseUp = hs.eventtap.new({ hs.eventtap.event.types.otherMouseUp }, function(e)
      -- print("up")
     local pressedMouseButton = e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber'])
-    if backMouseButton == pressedMouseButton or forwardMouseButton == pressedMouseButton 
+    if backMouseButton == pressedMouseButton 
         then 
             if (deferred) then
-                overrideOtherMouseDown:stop()
-                overrideOtherMouseUp:stop()
-                hs.eventtap.otherClick(e:location(), 0, pressedMouseButton)
-                overrideOtherMouseDown:start()
-                overrideOtherMouseUp:start()
+                setOverrides(e)
+                hs.eventtap.keyStroke({"cmd"}, "[")
                 return true
             end
             return false
         end
-        return false
+        
+        if forwardMouseButton == pressedMouseButton 
+            then 
+                if (deferred) then
+                    setOverrides(e)
+                    hs.eventtap.keyStroke({"cmd"}, "]")
+                    return true
+                end
+                return false
+            end
+            return false
 end)
 
 local oldmousepos = {}
